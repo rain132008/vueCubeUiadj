@@ -16,10 +16,10 @@
 ## src
 
 - `src/main.js`：Vue2 应用入口，只注册 `cube-ui/lib/scroll` 并挂载根组件。
-- `src/App.vue`：应用壳，负责场景入口页和测试页之间切换。
-- `src/demos/ScenarioIndex.vue`：验收入口页，列出所有 cube-scroll 场景并进入对应测试区。
+- `src/App.vue`：应用壳，负责场景入口页和测试页之间切换，并提供移动端触控按钮的全局基础样式。
+- `src/demos/ScenarioIndex.vue`：验收入口页，列出所有 cube-scroll 场景并进入对应测试区，包含移动端单列卡片布局。
 - `src/demos/scrollScenarios.js`：场景清单数据，供入口页和测试约束复用。
-- `src/demos/CubeScrollCompareDemo.vue`：真实 `cube-scroll` 与手写 `compat-scroll` 的对照验证页面，包含纵向、下拉、横向、历史实例、scrollbar、mouseWheel、eventPassthrough 嵌套、freeScroll、keep-alive、图片加载、空/短列表和卸载销毁场景。
+- `src/demos/CubeScrollCompareDemo.vue`：真实 `cube-scroll` 与手写 `compat-scroll` 的对照验证页面，包含纵向、下拉、横向、历史实例、scrollbar、mouseWheel、eventPassthrough 嵌套、freeScroll、keep-alive、图片加载、空/短列表和卸载销毁场景，并适配手机宽度下的单列验收布局。
 - `src/components/CompatScroll.vue`：手写 cube-scroll 兼容组件，负责 Vue2 外壳、BetterScroll 生命周期和 ref 方法。
 - `src/compat/scroll/options.js`：cube-scroll 风格配置到 BetterScroll 配置的映射逻辑，包括 `scroll-events` 到 `probeType` 的兼容处理和 `eventPassthrough` 冲突规避。
 - `src/compat/scroll/pullState.js`：上拉加载、下拉刷新状态管理逻辑，并提供 `getPullStateSnapshot()` 给 demo 和迁移验证读取状态。

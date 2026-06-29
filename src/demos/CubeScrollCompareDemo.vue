@@ -1299,6 +1299,7 @@ export default {
 .demo-page {
   min-height: 100vh;
   padding: 24px;
+  overflow-x: hidden;
 }
 
 .demo-header {
@@ -1330,13 +1331,15 @@ export default {
 .demo-actions button,
 .method-actions button,
 .panel-title button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid #c8d1dc;
   border-radius: 6px;
   color: #102a43;
   background: #ffffff;
   cursor: pointer;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .demo-actions button:hover,
@@ -1363,6 +1366,7 @@ export default {
 .compare-panel,
 .method-panel,
 .log-panel {
+  min-width: 0;
   border: 1px solid #d7dee8;
   border-radius: 8px;
   background: #ffffff;
@@ -1412,6 +1416,8 @@ export default {
 }
 
 .scroll-box {
+  width: 100%;
+  max-width: 100%;
   height: 420px;
   border: 1px solid #e1e7ef;
   border-radius: 6px;
@@ -1432,6 +1438,8 @@ export default {
 }
 
 .keep-alive-box {
+  width: 100%;
+  max-width: 100%;
   height: 300px;
   overflow: hidden;
   border: 1px solid #e1e7ef;
@@ -1513,6 +1521,7 @@ export default {
 }
 
 .short-box {
+  min-width: 0;
   height: 220px;
   overflow: hidden;
   border: 1px solid #e1e7ef;
@@ -1598,6 +1607,7 @@ export default {
 .nested-outer {
   height: 330px;
   overflow: auto;
+  overscroll-behavior: contain;
   border: 1px solid #e1e7ef;
   border-radius: 6px;
   background: #f8fafc;
@@ -1610,6 +1620,8 @@ export default {
 }
 
 .nested-horizontal-box {
+  width: calc(100% - 24px);
+  max-width: calc(100% - 24px);
   height: 170px;
   margin: 0 12px 12px;
   overflow: hidden;
@@ -1680,6 +1692,196 @@ export default {
   .method-grid,
   .log-grid,
   .short-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .demo-page {
+    padding: 12px;
+  }
+
+  .demo-header {
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .demo-header h1 {
+    font-size: 23px;
+  }
+
+  .demo-header p,
+  .method-panel p,
+  .scenario-note,
+  .nested-outer > p {
+    font-size: 14px;
+  }
+
+  .demo-actions,
+  .method-actions,
+  .panel-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .demo-actions button,
+  .method-actions button,
+  .panel-title button {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    padding: 0 10px;
+  }
+
+  .demo-actions button:first-child {
+    flex-basis: 100%;
+  }
+
+  .status-grid,
+  .compare-grid,
+  .method-grid,
+  .log-grid {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .scenario-section {
+    scroll-margin-top: 8px;
+  }
+
+  .status-panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 10px;
+    min-height: auto;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .status-panel strong {
+    grid-column: 1 / -1;
+    font-size: 14px;
+  }
+
+  .compare-panel,
+  .method-panel,
+  .log-panel,
+  .nested-panel {
+    padding: 12px;
+  }
+
+  .panel-title {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .panel-actions {
+    justify-content: flex-start;
+  }
+
+  .panel-title h2,
+  .method-panel h3,
+  .log-panel h3 {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .scroll-box {
+    height: min(58vh, 420px);
+  }
+
+  .compact-scroll-box {
+    height: min(46vh, 320px);
+  }
+
+  .horizontal-scroll-box {
+    height: 180px;
+  }
+
+  .free-scroll-box,
+  .keep-alive-box {
+    height: min(48vh, 320px);
+  }
+
+  .short-box {
+    height: 190px;
+  }
+
+  .item-list,
+  .image-list {
+    padding: 8px;
+  }
+
+  .item-row {
+    min-height: 58px;
+    margin-bottom: 8px;
+    padding: 10px;
+  }
+
+  .image-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .image-placeholder {
+    min-height: 118px;
+  }
+
+  .horizontal-track {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .horizontal-card {
+    flex-basis: 150px;
+    height: 132px;
+    padding: 12px;
+  }
+
+  .free-grid {
+    grid-template-columns: repeat(6, 120px);
+    grid-auto-rows: 72px;
+    min-width: 820px;
+    min-height: 500px;
+    padding: 10px;
+  }
+
+  .nested-outer {
+    height: min(52vh, 340px);
+  }
+
+  .nested-horizontal-box {
+    width: calc(100% - 20px);
+    max-width: calc(100% - 20px);
+    height: 164px;
+    margin: 0 10px 10px;
+  }
+
+  .nested-filler {
+    padding: 0 10px 14px;
+  }
+
+  .nested-status {
+    gap: 8px 10px;
+    font-size: 13px;
+  }
+
+  .log-panel ol {
+    min-height: 110px;
+    max-height: 180px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .demo-actions button,
+  .method-actions button,
+  .panel-title button {
+    flex-basis: 100%;
+  }
+
+  .status-panel {
     grid-template-columns: 1fr;
   }
 }

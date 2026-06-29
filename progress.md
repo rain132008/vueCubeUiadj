@@ -43,6 +43,7 @@
 - 新增 `scrollScenarios.js` 和 `ScenarioIndex.vue`，默认进入场景入口页，8 个场景卡片可逐项跳到对应测试区。
 - 新增 `scrollScenarios.spec.js`，约束场景 id 顺序和入口文案完整性。
 - 浏览器验证：入口页显示 8 个场景卡片；点击横向滚动场景后进入测试页并滚动到 `scenario-horizontal`，返回按钮可回到入口页，控制台无 error。
+- 按移动端验收补齐响应式布局：入口页手机宽度下使用单列卡片，测试页手机宽度下使用单列对照面板、44px 触控按钮、稳定 scroll 容器高度，并避免横向/freeScroll 内部宽内容撑破整页。
 
 ### 遗留问题
 

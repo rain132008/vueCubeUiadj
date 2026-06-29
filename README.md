@@ -64,5 +64,6 @@ npm run build
 - 已增加历史 `this.$refs.xxx.scroll` 直接访问、scrollbar、mouseWheel、eventPassthrough 嵌套横向和 freeScroll 专项验证区。
 - 已增加 keep-alive、图片加载后 refresh、空列表、不足一屏、组件卸载销毁验证区。
 - 已增加场景入口页，点击场景后进入完整测试页并滚动到对应区域。
+- 已按移动端验收场景优化入口页和测试页：手机宽度下单列布局、按钮触控高度不低于 44px，横向滚动场景保留内部横向可滚动但不撑破整页。
 
 后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节、目标目录结构整理和 Vue3 迁移外壳。

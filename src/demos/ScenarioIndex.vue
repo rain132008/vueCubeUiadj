@@ -46,6 +46,7 @@ export default {
 .scenario-index {
   min-height: 100vh;
   padding: 28px;
+  overflow-x: hidden;
   color: #17202a;
   background: #eef3f7;
 }
@@ -84,13 +85,15 @@ export default {
 
 .primary-action,
 .scene-card button {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   border: 1px solid #2f6fb5;
   border-radius: 6px;
   color: #ffffff;
   background: #2f6fb5;
   cursor: pointer;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .scene-grid {
@@ -102,6 +105,7 @@ export default {
 .scene-card {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 260px;
   padding: 16px;
   border: 1px solid #ccd8e3;
@@ -165,15 +169,60 @@ export default {
 
 @media (max-width: 760px) {
   .scenario-index {
-    padding: 14px;
+    padding: 12px;
   }
 
   .index-header {
     flex-direction: column;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding: 16px;
+  }
+
+  .index-header h1 {
+    font-size: 24px;
+  }
+
+  .index-summary {
+    margin-top: 8px;
+    font-size: 14px;
   }
 
   .scene-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .scene-card {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .scene-card h2 {
+    font-size: 16px;
+  }
+
+  .scene-card p {
+    margin: 10px 0 12px;
+    font-size: 14px;
+  }
+
+  .primary-action {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .scene-card-head {
+    gap: 8px;
+  }
+
+  .scene-index {
+    min-width: 30px;
+  }
+
+  .scene-tags span {
+    padding: 4px 7px;
   }
 }
 </style>

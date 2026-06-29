@@ -48,6 +48,10 @@ body,
   margin: 0;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   color: #1f2933;
   background: #f4f6f8;
@@ -55,6 +59,8 @@ body {
 }
 
 button {
+  min-height: 44px;
   font: inherit;
+  touch-action: manipulation;
 }
 </style>
