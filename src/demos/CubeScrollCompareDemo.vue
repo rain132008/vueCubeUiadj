@@ -6,6 +6,7 @@
         <p>真实 cube-scroll 作为基准，手写 compat-scroll 用相同场景做行为对比。</p>
       </div>
       <div class="demo-actions">
+        <button type="button" @click="$emit('back')">返回场景列表</button>
         <button type="button" @click="appendItems">追加纵向数据</button>
         <button type="button" @click="scrollBothToMiddle">滚动到 -300</button>
         <button type="button" @click="readBothScroll">读取坐标</button>
@@ -38,7 +39,7 @@
       </div>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-vertical" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>纵向：真实 cube-scroll</h2>
@@ -92,7 +93,7 @@
       </article>
     </section>
 
-    <section class="method-grid">
+    <section id="scenario-methods" class="method-grid scenario-section">
       <div class="method-panel">
         <h3>手写组件方法验证</h3>
         <div class="method-actions">
@@ -113,7 +114,7 @@
       </div>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-pulldown" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>下拉刷新：真实 cube-scroll</h2>
@@ -161,7 +162,7 @@
       </article>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-horizontal" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>横向：真实 cube-scroll</h2>
@@ -225,7 +226,7 @@
       </div>
     </section>
 
-    <section class="method-grid">
+    <section id="scenario-legacy" class="method-grid scenario-section">
       <div class="method-panel">
         <h3>历史 scroll 实例访问</h3>
         <div class="method-actions">
@@ -245,7 +246,7 @@
       </div>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-wheel-free" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>scrollbar / mouseWheel：手写 compat-scroll</h2>
@@ -292,7 +293,7 @@
       </article>
     </section>
 
-    <section class="compare-panel nested-panel">
+    <section id="scenario-nested" class="compare-panel nested-panel scenario-section">
       <div class="panel-title">
         <h2>eventPassthrough / 嵌套滚动：外层纵向，内层横向</h2>
         <button type="button" @click="scrollNestedHorizontal">内层 scrollTo(-240, 0)</button>
@@ -328,7 +329,7 @@
       </div>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-lifecycle" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>keep-alive / activated：手写 compat-scroll</h2>
@@ -385,7 +386,7 @@
       </article>
     </section>
 
-    <section class="compare-grid">
+    <section id="scenario-edge" class="compare-grid scenario-section">
       <article class="compare-panel">
         <div class="panel-title">
           <h2>空列表 / 不足一屏：手写 compat-scroll</h2>
@@ -586,6 +587,12 @@ export default {
     KeepAliveScrollPane,
     KeepAliveBlankPane
   },
+  props: {
+    initialScenario: {
+      type: String,
+      default: 'scenario-vertical'
+    }
+  },
   data() {
     return {
       items: createItems(24),
@@ -764,9 +771,27 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.readCompatPullStatus()
+      this.scrollToScenario(this.initialScenario)
     })
   },
   methods: {
+    scrollToScenario(sceneId) {
+      if (!sceneId) {
+        return
+      }
+
+      const target = document.getElementById(sceneId)
+      if (!target) {
+        return
+      }
+
+      window.setTimeout(() => {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }, 120)
+    },
     appendItems() {
       const nextItems = createItems(5, this.items.length)
       this.items = this.items.concat(nextItems)
@@ -1328,6 +1353,10 @@ export default {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 16px;
+}
+
+.scenario-section {
+  scroll-margin-top: 18px;
 }
 
 .status-panel,

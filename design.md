@@ -41,7 +41,9 @@
 
 ## Demo 场景
 
-当前 demo 分为三个对照区：
+当前 demo 先进入场景入口页，入口页列出 8 个验收场景。点击场景后进入完整测试页，并滚动到对应验证区。
+
+完整测试页包含这些验证区：
 
 1. 纵向滚动：验证普通列表滚动、事件、`data` 自动刷新、`forceUpdate()` 和 ref 方法。
 2. 下拉刷新：验证 `pullDownRefresh` 配置、`pulling-down` 事件和 `finishPullDown()`。

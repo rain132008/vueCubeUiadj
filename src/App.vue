@@ -1,16 +1,36 @@
 <template>
   <div id="app">
-    <CubeScrollCompareDemo />
+    <ScenarioIndex v-if="view === 'index'" @open-scene="openScene" />
+    <CubeScrollCompareDemo
+      v-else
+      :key="activeScenario"
+      :initial-scenario="activeScenario"
+      @back="view = 'index'"
+    />
   </div>
 </template>
 
 <script>
 import CubeScrollCompareDemo from './demos/CubeScrollCompareDemo.vue'
+import ScenarioIndex from './demos/ScenarioIndex.vue'
 
 export default {
   name: 'App',
   components: {
-    CubeScrollCompareDemo
+    CubeScrollCompareDemo,
+    ScenarioIndex
+  },
+  data() {
+    return {
+      view: 'index',
+      activeScenario: 'scenario-vertical'
+    }
+  },
+  methods: {
+    openScene(sceneId) {
+      this.activeScenario = sceneId
+      this.view = 'demo'
+    }
   }
 }
 </script>

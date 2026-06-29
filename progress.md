@@ -40,6 +40,9 @@
 - 新增组件卸载销毁场景：v-if 销毁后重建，浏览器验证重新读取到 `instance=true`。
 - 本轮最终验证：`npm test` 通过 2 个测试套件、20 个测试；`npm run build` 通过；常见中文乱码片段扫描未发现异常。
 - 本轮最终浏览器验证：keep-alive 返回后 14 条、图片显示后 `maxY=-509`、空/短列表 `maxY=0`、销毁重建后 `instance=true`，控制台无 error。
+- 新增 `scrollScenarios.js` 和 `ScenarioIndex.vue`，默认进入场景入口页，8 个场景卡片可逐项跳到对应测试区。
+- 新增 `scrollScenarios.spec.js`，约束场景 id 顺序和入口文案完整性。
+- 浏览器验证：入口页显示 8 个场景卡片；点击横向滚动场景后进入测试页并滚动到 `scenario-horizontal`，返回按钮可回到入口页，控制台无 error。
 
 ### 遗留问题
 

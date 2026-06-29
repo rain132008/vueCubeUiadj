@@ -34,6 +34,7 @@ npm run build
 - `npm test` 通过。
 - `npm run build` 通过。
 - `npm run dev` 已在 `http://127.0.0.1:8080/` 启动。
+- 默认进入场景入口页，8 个场景卡片可逐项进入对应测试区。
 - 浏览器烟测通过：页面存在纵向、下拉刷新、横向滚动共 6 个对照面板，控制台无 error。
 - 点击“追加数据”后两侧纵向列表同步增加，控制台无 error。
 - 点击 `forceUpdate(false)` 后，手写组件上拉状态进入 `noMore`。
@@ -62,5 +63,6 @@ npm run build
 - `eventPassthrough` 会规避与当前滚动方向冲突的组合：横向滚动不会保留 `horizontal` 穿透，纵向滚动不会保留 `vertical` 穿透，`freeScroll` 不保留事件穿透。
 - 已增加历史 `this.$refs.xxx.scroll` 直接访问、scrollbar、mouseWheel、eventPassthrough 嵌套横向和 freeScroll 专项验证区。
 - 已增加 keep-alive、图片加载后 refresh、空列表、不足一屏、组件卸载销毁验证区。
+- 已增加场景入口页，点击场景后进入完整测试页并滚动到对应区域。
 
 后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节、目标目录结构整理和 Vue3 迁移外壳。
