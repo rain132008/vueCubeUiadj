@@ -13,6 +13,10 @@
 - `implementPlan.md`：当前实施计划，只记录开发里程碑和后续步骤。
 - `progress.md`：开发过程记录、验证结果和遗留问题。
 
+## docs
+
+- `docs/compat-scroll-ai-handoff.md`：`CompatScroll` 组件交接文档，面向后续公司内部 AI 或开发者接手，说明 API、状态机、验证入口、Vue3 迁移建议和禁止事项。
+
 ## src
 
 - `src/main.js`：Vue2 应用入口，只注册 `cube-ui/lib/scroll` 并挂载根组件。

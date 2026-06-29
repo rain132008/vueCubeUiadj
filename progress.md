@@ -47,6 +47,7 @@
 - 修复手写下拉刷新成功文案不回收的问题：下拉层从滚动内容流移到 wrapper 绝对定位层，回弹结束后隐藏到负高度，并新增 cube-ui 风格 bubble 拉伸、loading 和成功停留流程。
 - 新增 `compatScrollPulldown.spec.js` 结构回归测试，确保下拉提示层不再作为列表首项占位；新增 `resetPullDownState()` 状态测试。
 - 浏览器验证：手机视口下手写下拉层父节点为 `.compat-scroll-wrapper`，content 第一项为列表，回弹后下拉层 top 为 `-60px`，状态回到 `pulling`，控制台无 error。应用内浏览器不支持 CDP 触摸事件注入，真实手势仍需人工在页面里拖动确认手感。
+- 新增 `docs/compat-scroll-ai-handoff.md`，用于后续公司内部 AI 或开发者接手 `CompatScroll`，覆盖组件目的、API、配置映射、状态机、下拉 DOM 结构、验收入口、自动化验证、Vue3 迁移建议和禁止事项。
 
 ### 遗留问题
 
