@@ -328,6 +328,127 @@
       </div>
     </section>
 
+    <section class="compare-grid">
+      <article class="compare-panel">
+        <div class="panel-title">
+          <h2>keep-alive / activated：手写 compat-scroll</h2>
+          <div class="panel-actions">
+            <button type="button" @click="activeKeepAlivePane = 'scroll'">滚动页</button>
+            <button type="button" @click="activeKeepAlivePane = 'blank'">离开</button>
+            <button type="button" @click="appendKeepAliveItems">离开后追加</button>
+            <button type="button" @click="readKeepAliveScroll">读取</button>
+          </div>
+        </div>
+        <keep-alive>
+          <KeepAliveScrollPane
+            v-if="activeKeepAlivePane === 'scroll'"
+            ref="keepAlivePane"
+            :items="keepAliveItems"
+            @pane-activated="onKeepAliveActivated"
+            @pane-refresh="onKeepAliveRefresh"
+          />
+          <KeepAliveBlankPane v-else />
+        </keep-alive>
+        <p class="scenario-note">{{ keepAliveText }}</p>
+      </article>
+
+      <article class="compare-panel">
+        <div class="panel-title">
+          <h2>图片加载后 refresh：手写 compat-scroll</h2>
+          <div class="panel-actions">
+            <button type="button" @click="toggleDelayedImages">切换图片</button>
+            <button type="button" @click="readImageScroll">读取高度</button>
+          </div>
+        </div>
+        <div class="scroll-box compact-scroll-box">
+          <CompatScroll
+            ref="imageScroll"
+            :data="imageItems"
+            :options="imageOptions"
+            @refresh="recordImageRefresh"
+          >
+            <ul class="image-list">
+              <li v-for="item in imageItems" :key="'image-' + item.id" class="image-row">
+                <div class="image-placeholder">
+                  <img v-if="imagesVisible" :src="item.src" :alt="item.title" />
+                  <span v-else>{{ item.title }}</span>
+                </div>
+                <div>
+                  <strong>{{ item.title }}</strong>
+                  <p>{{ item.desc }}</p>
+                </div>
+              </li>
+            </ul>
+          </CompatScroll>
+        </div>
+        <p class="scenario-note">{{ imageScrollText }}</p>
+      </article>
+    </section>
+
+    <section class="compare-grid">
+      <article class="compare-panel">
+        <div class="panel-title">
+          <h2>空列表 / 不足一屏：手写 compat-scroll</h2>
+          <button type="button" @click="readShortScrolls">读取状态</button>
+        </div>
+        <div class="short-grid">
+          <div class="short-box">
+            <CompatScroll
+              ref="emptyScroll"
+              :data="emptyItems"
+              :options="shortOptions"
+              @pulling-up="onEmptyPullingUp"
+            >
+              <div class="empty-state">空列表</div>
+            </CompatScroll>
+          </div>
+          <div class="short-box">
+            <CompatScroll
+              ref="shortScroll"
+              :data="shortItems"
+              :options="shortOptions"
+              @pulling-up="onShortPullingUp"
+            >
+              <ul class="item-list">
+                <li v-for="item in shortItems" :key="'short-' + item.id" class="item-row">
+                  <strong>{{ item.title }}</strong>
+                  <span>{{ item.desc }}</span>
+                </li>
+              </ul>
+            </CompatScroll>
+          </div>
+        </div>
+        <p class="scenario-note">{{ shortScrollText }}</p>
+      </article>
+
+      <article class="compare-panel">
+        <div class="panel-title">
+          <h2>组件卸载销毁：手写 compat-scroll</h2>
+          <div class="panel-actions">
+            <button type="button" @click="toggleDestroyScroll">{{ showDestroyScroll ? '销毁' : '创建' }}</button>
+            <button type="button" @click="readDestroyScroll">读取实例</button>
+          </div>
+        </div>
+        <div class="scroll-box compact-scroll-box destroy-box">
+          <CompatScroll
+            v-if="showDestroyScroll"
+            ref="destroyScroll"
+            :data="destroyItems"
+            :options="destroyOptions"
+          >
+            <ul class="item-list">
+              <li v-for="item in destroyItems" :key="'destroy-' + item.id" class="item-row">
+                <strong>{{ item.title }}</strong>
+                <span>{{ item.desc }}</span>
+              </li>
+            </ul>
+          </CompatScroll>
+          <div v-else class="empty-state">组件已销毁</div>
+        </div>
+        <p class="scenario-note">{{ destroyScrollText }}</p>
+      </article>
+    </section>
+
     <section class="log-grid">
       <div class="log-panel">
         <h3>真实组件日志</h3>
@@ -381,10 +502,89 @@ function createPullStatus() {
   }
 }
 
+function createImageSrc(id) {
+  const colors = ['#4f8ad9', '#18a058', '#d97706', '#7c3aed', '#dc2626']
+  const color = colors[(id - 1) % colors.length]
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="240" viewBox="0 0 640 240"><rect width="640" height="240" fill="${color}"/><text x="36" y="132" fill="#ffffff" font-size="42" font-family="Arial">image ${id}</text></svg>`
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
+
+function createImageItems() {
+  return Array.from({ length: 6 }).map((_, index) => {
+    const id = index + 1
+    return {
+      id,
+      title: `延迟图片 ${id}`,
+      desc: `图片显示后内容高度变化，用于验证 observeImage 和 refresh。`,
+      src: createImageSrc(id)
+    }
+  })
+}
+
+const KeepAliveScrollPane = {
+  name: 'KeepAliveScrollPane',
+  components: {
+    CompatScroll
+  },
+  props: {
+    items: {
+      type: Array,
+      required: true
+    }
+  },
+  activated() {
+    this.$emit('pane-activated')
+  },
+  methods: {
+    refresh() {
+      if (this.$refs.scroll) {
+        this.$refs.scroll.refresh()
+      }
+    },
+    getScroll() {
+      if (!this.$refs.scroll) {
+        return {
+          x: 0,
+          y: 0,
+          maxScrollX: 0,
+          maxScrollY: 0,
+          instance: null
+        }
+      }
+
+      return this.$refs.scroll.getScroll()
+    }
+  },
+  template: `
+    <div class="keep-alive-box">
+      <CompatScroll
+        ref="scroll"
+        :data="items"
+        :options="{ probeType: 3, click: true, scrollbar: { fade: true } }"
+        @refresh="$emit('pane-refresh')"
+      >
+        <ul class="item-list">
+          <li v-for="item in items" :key="'keep-' + item.id" class="item-row">
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.desc }}</span>
+          </li>
+        </ul>
+      </CompatScroll>
+    </div>
+  `
+}
+
+const KeepAliveBlankPane = {
+  name: 'KeepAliveBlankPane',
+  template: '<div class="keep-alive-box empty-state">已离开滚动页</div>'
+}
+
 export default {
   name: 'CubeScrollCompareDemo',
   components: {
-    CompatScroll
+    CompatScroll,
+    KeepAliveScrollPane,
+    KeepAliveBlankPane
   },
   data() {
     return {
@@ -394,9 +594,21 @@ export default {
       wheelItems: createItems(18, 0, '滚轮项'),
       freeItems: createItems(36, 0, '自由项'),
       nestedFillerItems: createItems(8, 0, '外层内容'),
+      keepAliveItems: createItems(10, 0, '缓存项'),
+      imageItems: createImageItems(),
+      emptyItems: [],
+      shortItems: createItems(2, 0, '短列表项'),
+      destroyItems: createItems(14, 0, '销毁项'),
       compatLoadCount: 0,
+      activeKeepAlivePane: 'scroll',
+      imagesVisible: false,
+      showDestroyScroll: true,
       legacyScrollText: '尚未读取历史 scroll 实例',
       wheelPanelText: '已启用 scrollbar.fade 和 mouseWheel.speed=20',
+      keepAliveText: 'keep-alive 滚动页已挂载',
+      imageScrollText: '图片尚未显示',
+      shortScrollText: '尚未读取空列表 / 短列表状态',
+      destroyScrollText: '组件实例已创建',
       cubePosition: {
         x: 0,
         y: 0
@@ -520,6 +732,32 @@ export default {
         mouseWheel: {
           speed: 20
         }
+      },
+      imageOptions: {
+        probeType: 3,
+        click: true,
+        observeImage: true,
+        scrollbar: {
+          fade: true
+        }
+      },
+      shortOptions: {
+        probeType: 3,
+        click: true,
+        pullUpLoad: {
+          threshold: 10,
+          txt: {
+            more: '加载更多',
+            noMore: '没有更多'
+          }
+        }
+      },
+      destroyOptions: {
+        probeType: 3,
+        click: true,
+        scrollbar: {
+          fade: true
+        }
       }
     }
   },
@@ -537,6 +775,35 @@ export default {
       this.$nextTick(() => {
         this.readCompatPullStatus()
       })
+    },
+    appendKeepAliveItems() {
+      const nextItems = createItems(4, this.keepAliveItems.length, '缓存新增')
+      this.keepAliveItems = this.keepAliveItems.concat(nextItems)
+      this.keepAliveText = `keep-alive 数据已追加 ${nextItems.length} 条`
+      this.recordCompatLog(this.keepAliveText)
+    },
+    onKeepAliveActivated() {
+      this.keepAliveText = `keep-alive activated，当前 ${this.keepAliveItems.length} 条`
+      this.recordCompatLog(this.keepAliveText)
+      this.$nextTick(() => {
+        if (this.$refs.keepAlivePane) {
+          this.$refs.keepAlivePane.refresh()
+        }
+      })
+    },
+    onKeepAliveRefresh() {
+      this.recordCompatLog('keep-alive refresh event')
+    },
+    readKeepAliveScroll() {
+      if (!this.$refs.keepAlivePane) {
+        this.keepAliveText = '当前不在 keep-alive 滚动页'
+        this.recordCompatLog(this.keepAliveText)
+        return
+      }
+
+      const scroll = this.$refs.keepAlivePane.getScroll()
+      this.keepAliveText = `keep-alive x=${scroll.x}, y=${scroll.y}, maxY=${scroll.maxScrollY}, count=${this.keepAliveItems.length}`
+      this.recordCompatLog(this.keepAliveText)
     },
     scrollBothToMiddle() {
       if (this.$refs.cubeScroll && this.$refs.cubeScroll.scrollTo) {
@@ -919,6 +1186,78 @@ export default {
       }
       this.recordCompatLog(`freeScroll scroll-end x=${position.x}, y=${position.y}`)
     },
+    toggleDelayedImages() {
+      this.imagesVisible = !this.imagesVisible
+      this.imageScrollText = this.imagesVisible ? '图片已显示，等待 observeImage/refresh' : '图片已隐藏'
+      this.recordCompatLog(this.imageScrollText)
+      window.setTimeout(() => {
+        if (this.$refs.imageScroll) {
+          this.$refs.imageScroll.refresh()
+        }
+        this.readImageScroll()
+      }, 300)
+    },
+    recordImageRefresh() {
+      this.recordCompatLog('image scroll refresh event')
+    },
+    readImageScroll() {
+      if (!this.$refs.imageScroll) {
+        this.imageScrollText = '图片滚动实例不存在'
+        return
+      }
+
+      const scroll = this.$refs.imageScroll.getScroll()
+      this.imageScrollText = `image x=${scroll.x}, y=${scroll.y}, maxY=${scroll.maxScrollY}, visible=${this.imagesVisible}`
+      this.recordCompatLog(this.imageScrollText)
+    },
+    readShortScrolls() {
+      const empty = this.$refs.emptyScroll ? this.$refs.emptyScroll.getScroll() : null
+      const short = this.$refs.shortScroll ? this.$refs.shortScroll.getScroll() : null
+      this.shortScrollText = `empty maxY=${empty ? empty.maxScrollY : 'none'}, short maxY=${short ? short.maxScrollY : 'none'}`
+      this.recordCompatLog(this.shortScrollText)
+    },
+    onEmptyPullingUp() {
+      this.recordCompatLog('empty pulling-up should not loop')
+      if (this.$refs.emptyScroll) {
+        this.$refs.emptyScroll.forceUpdate(false)
+      }
+    },
+    onShortPullingUp() {
+      this.recordCompatLog('short pulling-up should not loop')
+      if (this.$refs.shortScroll) {
+        this.$refs.shortScroll.forceUpdate(false)
+      }
+    },
+    readDestroyScroll() {
+      if (!this.showDestroyScroll) {
+        this.destroyScrollText = '组件当前已销毁'
+        this.recordCompatLog(this.destroyScrollText)
+        return
+      }
+
+      if (!this.$refs.destroyScroll) {
+        this.destroyScrollText = '组件显示中，但 ref 尚未就绪'
+        this.recordCompatLog(this.destroyScrollText)
+        return
+      }
+
+      const scroll = this.$refs.destroyScroll.getScroll()
+      this.destroyScrollText = `destroy x=${scroll.x}, y=${scroll.y}, maxY=${scroll.maxScrollY}, instance=${Boolean(scroll.instance)}`
+      this.recordCompatLog(this.destroyScrollText)
+    },
+    toggleDestroyScroll() {
+      this.showDestroyScroll = !this.showDestroyScroll
+      this.destroyScrollText = this.showDestroyScroll ? '组件正在创建' : '组件已销毁'
+      this.recordCompatLog(this.destroyScrollText)
+
+      if (this.showDestroyScroll) {
+        this.$nextTick(() => {
+          window.setTimeout(() => {
+            this.readDestroyScroll()
+          }, 100)
+        })
+      }
+    },
     recordCubeLog(message) {
       this.cubeLogs.unshift(`${new Date().toLocaleTimeString()} ${message}`)
       this.cubeLogs = this.cubeLogs.slice(0, 30)
@@ -1029,6 +1368,13 @@ export default {
   margin-bottom: 12px;
 }
 
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .panel-title h2,
 .method-panel h3,
 .log-panel h3 {
@@ -1056,6 +1402,14 @@ export default {
   height: 300px;
 }
 
+.keep-alive-box {
+  height: 300px;
+  overflow: hidden;
+  border: 1px solid #e1e7ef;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
 .item-list {
   margin: 0;
   padding: 10px;
@@ -1081,6 +1435,81 @@ export default {
 .item-row span {
   color: #667085;
   font-size: 13px;
+}
+
+.image-list {
+  margin: 0;
+  padding: 10px;
+  list-style: none;
+}
+
+.image-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid #dbe4ee;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.image-row p {
+  margin: 6px 0 0;
+  color: #667085;
+  line-height: 1.5;
+}
+
+.image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
+  overflow: hidden;
+  border-radius: 6px;
+  color: #52606d;
+  background: #e8edf3;
+}
+
+.image-placeholder img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.short-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.short-box {
+  height: 220px;
+  overflow: hidden;
+  border: 1px solid #e1e7ef;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px;
+  color: #667085;
+  text-align: center;
+}
+
+.destroy-box {
+  position: relative;
+}
+
+.scenario-note {
+  min-height: 24px;
+  margin: 10px 0 0;
+  color: #52606d;
+  line-height: 1.5;
 }
 
 .horizontal-track {
@@ -1220,7 +1649,8 @@ export default {
   .status-grid,
   .compare-grid,
   .method-grid,
-  .log-grid {
+  .log-grid,
+  .short-grid {
     grid-template-columns: 1fr;
   }
 }

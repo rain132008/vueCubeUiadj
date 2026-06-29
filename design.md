@@ -50,6 +50,10 @@
 5. scrollbar / mouseWheel：验证滚动条 DOM 和实际滚轮输入。
 6. eventPassthrough / 嵌套滚动：验证外层纵向、内层横向组合。
 7. freeScroll：验证双向自由滚动坐标。
+8. keep-alive：验证离开、追加数据、返回后 activated 和 refresh。
+9. 图片加载：验证图片延迟显示后滚动高度更新。
+10. 空/短列表：验证空内容和不足一屏不报错。
+11. 卸载销毁：验证 v-if 销毁和重建后实例恢复。
 
 ## 数据流
 
@@ -78,6 +82,5 @@ MVP 完成后继续补齐：
 
 - 上拉加载完整 noMore 语义。
 - 下拉刷新阈值、停留距离和文案。
-- 横向滚动完整场景。
-- scrollbar、mouseWheel、eventPassthrough、freeScroll。
-- keep-alive、图片加载后 refresh、组件卸载销毁。
+- 上拉触底和下拉阈值的自动化浏览器验证。
+- 目标目录结构整理和 Vue3 外壳迁移验证。

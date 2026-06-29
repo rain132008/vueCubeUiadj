@@ -18,5 +18,8 @@
 - [x] 补齐 freeScroll、scrollbar、mouseWheel 基础验证。
 - [x] 补齐 eventPassthrough 嵌套横向滚动基础验证。
 - [ ] 补齐上拉触底、下拉阈值、横向滚动的自动化浏览器验证。
-- [ ] 补齐 keep-alive 场景。
-- [ ] 补齐图片加载后 refresh 和组件卸载销毁验证。
+- [x] 补齐 keep-alive 场景。
+- [x] 补齐图片加载后 refresh 验证。
+- [x] 补齐空列表 / 不足一屏验证。
+- [x] 补齐组件卸载销毁验证。
+- [ ] 整理目标迁移目录结构。

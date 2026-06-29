@@ -227,4 +227,26 @@ describe('scroll options', () => {
     expect(options.scrollY).toBe(true)
     expect(options.eventPassthrough).toBeUndefined()
   })
+
+  test('observeDOM and observeImage stay enabled for dynamic content and delayed images', () => {
+    const options = buildBetterScrollOptions({
+      options: {
+        observeDOM: false,
+        observeImage: false
+      },
+      direction: 'vertical',
+      probeType: 1,
+      click: false,
+      bounce: true,
+      freeScroll: false,
+      pullUpLoad: false,
+      pullDownRefresh: false,
+      scrollbar: false,
+      mouseWheel: false,
+      eventPassthrough: ''
+    })
+
+    expect(options.observeDOM).toBe(true)
+    expect(options.observeImage).toBe(true)
+  })
 })

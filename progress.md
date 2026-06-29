@@ -33,8 +33,15 @@
 - 浏览器验证：freeScroll 滚动到 `x=-180, y=-120`，控制台无 error。
 - 本轮最终验证：`npm test` 通过 2 个测试套件、19 个测试；`npm run build` 通过；常见中文乱码片段扫描未发现异常。
 - 本轮最终浏览器验证：页面存在 8 个滚动盒和 eventPassthrough 嵌套区；历史实例、scrollbar、freeScroll、嵌套横向关键交互后控制台无 error。
+- 新增 `observeDOM/observeImage` 回归测试，确保动态内容和延迟图片场景默认可刷新。
+- 新增 keep-alive 场景：离开、追加数据、返回后触发 activated/refresh；浏览器验证返回后显示 14 条。
+- 新增图片加载后 refresh 场景：切换图片显示后读取到 `maxY=-509`，控制台无 error。
+- 新增空列表 / 不足一屏场景：浏览器验证 `empty maxY=0`、`short maxY=0`，控制台无 error。
+- 新增组件卸载销毁场景：v-if 销毁后重建，浏览器验证重新读取到 `instance=true`。
+- 本轮最终验证：`npm test` 通过 2 个测试套件、20 个测试；`npm run build` 通过；常见中文乱码片段扫描未发现异常。
+- 本轮最终浏览器验证：keep-alive 返回后 14 条、图片显示后 `maxY=-509`、空/短列表 `maxY=0`、销毁重建后 `instance=true`，控制台无 error。
 
 ### 遗留问题
 
 - 需要逐步确认 BetterScroll 2 插件方法和 cube-ui 旧行为之间的差异。
-- 需要继续补齐完整上拉触底自动化验证、下拉阈值细节、keep-alive、图片加载和组件卸载销毁场景。
+- 需要继续补齐完整上拉触底自动化验证、下拉阈值细节、目标迁移目录结构和 Vue3 外壳迁移验证。

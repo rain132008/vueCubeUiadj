@@ -41,6 +41,10 @@ npm run build
 - 实际滚轮输入可驱动 mouseWheel 面板滚动，滚动条 DOM 存在。
 - eventPassthrough 嵌套横向面板可滚动到 `x=-240`。
 - freeScroll 面板可滚动到 `x=-180, y=-120`。
+- keep-alive 场景可离开、追加数据、返回后触发 activated/refresh。
+- 图片延迟显示后可刷新并读到新的 `maxScrollY`。
+- 空列表 / 不足一屏不会报错。
+- v-if 销毁后重建可重新获得 BetterScroll 实例。
 
 ## 当前范围
 
@@ -57,5 +61,6 @@ npm run build
 - 下拉刷新和横向滚动已经有基础对照面板。
 - `eventPassthrough` 会规避与当前滚动方向冲突的组合：横向滚动不会保留 `horizontal` 穿透，纵向滚动不会保留 `vertical` 穿透，`freeScroll` 不保留事件穿透。
 - 已增加历史 `this.$refs.xxx.scroll` 直接访问、scrollbar、mouseWheel、eventPassthrough 嵌套横向和 freeScroll 专项验证区。
+- 已增加 keep-alive、图片加载后 refresh、空列表、不足一屏、组件卸载销毁验证区。
 
-后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节、图片加载和 keep-alive 场景。
+后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节、目标目录结构整理和 Vue3 迁移外壳。
