@@ -27,6 +27,8 @@
 - methods：`refresh()`、`forceUpdate()`、`scrollTo()`、`scrollToElement()`、`getScroll()`、`getPullStatus()`、`enable()`、`disable()`、`finishPullDown()`、`openPullUp()`、`closePullUp()`、`resetPullUpTxt()`、`destroy()`
 - 历史兼容：组件实例暴露 `scroll`，允许旧写法访问 `$refs.xxx.scroll.x`
 
+下拉刷新层按 cube-ui 的结构处理：下拉提示层是 wrapper 的绝对定位子节点，不进入滚动内容流。下拉触发前显示 bubble canvas，并根据正向 `y` 位移拉伸；触发后显示 loading；业务调用 `finishPullDown()` 或 `forceUpdate()` 后显示成功文案，停留 `stopTime`，再调用 BetterScroll 回弹，回弹结束后隐藏到负高度并把状态重置为 `pulling`。
+
 ### 框架无关逻辑
 
 `src/compat/scroll/options.js` 负责将 cube-scroll 风格配置映射为 BetterScroll 配置。传入 `scrollEvents` 且包含 `scroll` 时，自动将 `probeType` 提升到 3，保证实时滚动事件语义。

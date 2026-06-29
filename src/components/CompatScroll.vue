@@ -2,12 +2,26 @@
   <div class="cube-scroll compat-scroll">
     <div ref="wrapper" class="cube-scroll-wrapper compat-scroll-wrapper">
       <div ref="content" class="cube-scroll-content compat-scroll-content" :class="contentClass">
-        <div v-if="isPullDownVisible" class="compat-scroll-pulldown">
-          {{ currentPullDownText }}
-        </div>
         <slot />
         <div v-if="isPullUpVisible" class="compat-scroll-pullup">
           {{ currentPullUpText }}
+        </div>
+      </div>
+      <div v-if="isPullDownVisible" ref="pulldown" class="compat-scroll-pulldown">
+        <div class="compat-scroll-pulldown-wrapper" :style="pullDownStyle">
+          <div v-show="isBeforePullDown" class="before-trigger">
+            <CompatPullDownBubble class="bubble" :y="pullDownBubbleY" />
+          </div>
+          <div v-show="!isBeforePullDown" class="after-trigger">
+            <div v-show="pullState.pullDownLoading" class="compat-scroll-loading">
+              <span class="compat-scroll-loading-spinners">
+                <i v-for="index in 12" :key="index" class="compat-scroll-loading-spinner" />
+              </span>
+            </div>
+            <div v-show="!pullState.pullDownLoading" class="compat-scroll-pulldown-loaded">
+              <span>{{ currentPullDownText }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -43,6 +57,7 @@ import {
   forceUpdateState,
   getPullStateSnapshot,
   openPullUpState,
+  resetPullDownState,
   resetPullUpState,
   startPullingDown,
   startPullingUp
@@ -55,8 +70,174 @@ BScroll.use(MouseWheel)
 BScroll.use(ObserveDOM)
 BScroll.use(ObserveImage)
 
+const CompatPullDownBubble = {
+  name: 'CompatPullDownBubble',
+  props: {
+    y: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      ratio: 1,
+      width: 50,
+      height: 80,
+      initRadius: 18,
+      minHeadRadius: 12,
+      minTailRadius: 5,
+      initArrowRadius: 10,
+      minArrowRadius: 6,
+      arrowWidth: 3,
+      maxDistance: 40,
+      initCenterX: 25,
+      initCenterY: 25,
+      headCenter: {
+        x: 25,
+        y: 25
+      }
+    }
+  },
+  computed: {
+    canvasWidth() {
+      return this.width * this.ratio
+    },
+    canvasHeight() {
+      return this.height * this.ratio
+    },
+    canvasStyle() {
+      return {
+        width: `${this.width}px`,
+        height: `${this.height}px`
+      }
+    },
+    distance() {
+      return Math.max(0, Math.min(this.y * this.ratio, this.maxDistance))
+    }
+  },
+  watch: {
+    y() {
+      this.draw()
+    }
+  },
+  mounted() {
+    this.ratio = window.devicePixelRatio || 1
+    this.initRadius = 18 * this.ratio
+    this.minHeadRadius = 12 * this.ratio
+    this.minTailRadius = 5 * this.ratio
+    this.initArrowRadius = 10 * this.ratio
+    this.minArrowRadius = 6 * this.ratio
+    this.arrowWidth = 3 * this.ratio
+    this.maxDistance = 40 * this.ratio
+    this.initCenterX = 25 * this.ratio
+    this.initCenterY = 25 * this.ratio
+    this.headCenter = {
+      x: this.initCenterX,
+      y: this.initCenterY
+    }
+    this.$nextTick(() => {
+      this.draw()
+    })
+  },
+  methods: {
+    draw() {
+      const canvas = this.$refs.bubble
+      if (!canvas || typeof canvas.getContext !== 'function') {
+        return
+      }
+
+      const context = canvas.getContext('2d')
+      if (!context) {
+        return
+      }
+
+      context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+      this.drawBubble(context)
+      this.drawArrow(context)
+    },
+    drawBubble(context) {
+      context.save()
+      context.beginPath()
+
+      const percent = this.distance / this.maxDistance
+      const headRadius = this.initRadius - (this.initRadius - this.minHeadRadius) * percent
+      const tailRadius = this.initRadius - (this.initRadius - this.minTailRadius) * percent
+
+      this.headCenter.y = this.initCenterY - (this.initRadius - this.minHeadRadius) * percent
+      context.arc(this.headCenter.x, this.headCenter.y, headRadius, 0, Math.PI, true)
+
+      const tailCenter = {
+        x: this.headCenter.x,
+        y: this.headCenter.y + this.distance
+      }
+      const leftTailPoint = {
+        x: tailCenter.x - tailRadius,
+        y: tailCenter.y
+      }
+      const leftControlPoint = {
+        x: leftTailPoint.x,
+        y: leftTailPoint.y - this.distance / 2
+      }
+
+      context.quadraticCurveTo(leftControlPoint.x, leftControlPoint.y, leftTailPoint.x, leftTailPoint.y)
+      context.arc(tailCenter.x, tailCenter.y, tailRadius, Math.PI, 0, true)
+
+      const rightHeadPoint = {
+        x: this.headCenter.x + headRadius,
+        y: this.headCenter.y
+      }
+      const rightTailPoint = {
+        x: tailCenter.x + tailRadius,
+        y: rightHeadPoint.y + this.distance / 2
+      }
+
+      context.quadraticCurveTo(rightTailPoint.x, rightTailPoint.y, rightHeadPoint.x, rightHeadPoint.y)
+      context.fillStyle = 'rgb(170, 170, 170)'
+      context.fill()
+      context.strokeStyle = 'rgb(153, 153, 153)'
+      context.stroke()
+      context.restore()
+    },
+    drawArrow(context) {
+      context.save()
+      context.beginPath()
+
+      const percent = this.distance / this.maxDistance
+      const radius = this.initArrowRadius - (this.initArrowRadius - this.minArrowRadius) * percent
+      const arrowWidth = this.arrowWidth - percent
+
+      context.arc(this.headCenter.x, this.headCenter.y, radius - arrowWidth, -Math.PI / 2, 0, true)
+      context.arc(this.headCenter.x, this.headCenter.y, radius, 0, (Math.PI * 3) / 2, false)
+      context.lineTo(this.headCenter.x, this.headCenter.y - radius - this.arrowWidth / 2 + percent)
+      context.lineTo(
+        this.headCenter.x + 2 * this.arrowWidth - 2 * percent,
+        this.headCenter.y - radius + this.arrowWidth / 2
+      )
+      context.lineTo(this.headCenter.x, this.headCenter.y - radius + (this.arrowWidth * 3) / 2 - percent)
+      context.fillStyle = 'rgb(255, 255, 255)'
+      context.fill()
+      context.strokeStyle = 'rgb(170, 170, 170)'
+      context.stroke()
+      context.restore()
+    }
+  },
+  render(h) {
+    return h('canvas', {
+      ref: 'bubble',
+      style: this.canvasStyle,
+      attrs: {
+        width: this.canvasWidth,
+        height: this.canvasHeight
+      }
+    })
+  }
+}
+
 export default {
   name: 'CompatScroll',
+  components: {
+    CompatPullDownBubble
+  },
   props: {
     data: {
       type: Array,
@@ -114,7 +295,13 @@ export default {
   data() {
     return {
       scroll: null,
-      pullState: createPullState()
+      pullState: createPullState(),
+      isBeforePullDown: true,
+      pullDownBubbleY: 0,
+      pullDownStyle: 'top: -60px',
+      pullDownHeight: 60,
+      pullDownStop: 40,
+      resetPullDownTimer: null
     }
   },
   computed: {
@@ -157,6 +344,9 @@ export default {
       }
 
       return '下拉刷新'
+    },
+    pullDownConfig() {
+      return hasEnabledConfig(this.resolvedOptions.pullDownRefresh) ? this.resolvedOptions.pullDownRefresh : {}
     }
   },
   watch: {
@@ -164,6 +354,10 @@ export default {
       deep: true,
       handler() {
         this.$nextTick(() => {
+          if (this.shouldDeferRefreshForPullDown()) {
+            return
+          }
+
           this.refresh()
         })
       }
@@ -198,6 +392,7 @@ export default {
       }
 
       this.destroy()
+      this.resetPullDownVisual()
       this.scroll = new BScroll(this.$refs.wrapper, this.resolvedOptions)
       this.bindScrollEvents()
       this.refresh()
@@ -208,7 +403,9 @@ export default {
       }
 
       this.scroll.on('scroll', position => {
-        this.$emit('scroll', this.normalizePosition(position))
+        const normalizedPosition = this.normalizePosition(position)
+        this.updatePullDownVisual(normalizedPosition)
+        this.$emit('scroll', normalizedPosition)
       })
 
       this.scroll.on('scrollEnd', position => {
@@ -232,6 +429,8 @@ export default {
 
       if (hasEnabledConfig(this.resolvedOptions.pullDownRefresh)) {
         this.scroll.on('pullingDown', () => {
+          this.clearPullDownTimer()
+          this.isBeforePullDown = false
           if (!startPullingDown(this.pullState)) {
             this.finishPullDown()
             return
@@ -263,9 +462,13 @@ export default {
     forceUpdate(dirty) {
       forceUpdateState(this.pullState, dirty)
       this.finishPullUp()
-      this.finishPullDown()
+      if (hasEnabledConfig(this.resolvedOptions.pullDownRefresh)) {
+        this.finishPullDown(dirty)
+      }
       this.$nextTick(() => {
-        this.refresh()
+        if (!hasEnabledConfig(this.resolvedOptions.pullDownRefresh)) {
+          this.refresh()
+        }
       })
     },
     scrollTo(x = 0, y = 0, time = 0) {
@@ -319,15 +522,29 @@ export default {
       }
     },
     finishPullDown() {
+      const dirty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true
       finishPullDownState(this.pullState)
+      this.clearPullDownTimer()
 
-      if (this.scroll && typeof this.scroll.finishPullDown === 'function') {
-        this.scroll.finishPullDown()
-      }
+      const stopTime = this.getPullDownStopTime()
 
-      this.$nextTick(() => {
-        this.refresh()
-      })
+      this.resetPullDownTimer = window.setTimeout(() => {
+        if (this.scroll && typeof this.scroll.finishPullDown === 'function') {
+          this.scroll.finishPullDown()
+        }
+
+        const bounceTime = this.getBounceTime()
+
+        this.resetPullDownTimer = window.setTimeout(() => {
+          this.resetPullDownVisual()
+          resetPullDownState(this.pullState)
+          if (dirty) {
+            this.$nextTick(() => {
+              this.refresh()
+            })
+          }
+        }, bounceTime)
+      }, stopTime)
     },
     openPullUp() {
       openPullUpState(this.pullState)
@@ -352,8 +569,11 @@ export default {
     },
     destroy() {
       if (!this.scroll) {
+        this.clearPullDownTimer()
         return
       }
+
+      this.clearPullDownTimer()
 
       if (typeof this.scroll.destroy === 'function') {
         this.scroll.destroy()
@@ -362,6 +582,49 @@ export default {
       // 迁移兼容：为了兼容旧 cube-scroll 中直接访问 $refs.xxx.scroll 的历史代码。
       // 新代码不建议直接访问 scroll 实例，应优先使用 getScroll()/scrollTo()/refresh() 等封装方法。
       this.scroll = null
+    },
+    updatePullDownVisual(position) {
+      if (!hasEnabledConfig(this.resolvedOptions.pullDownRefresh)) {
+        return
+      }
+
+      const y = position && typeof position.y === 'number' ? position.y : 0
+
+      if (this.isBeforePullDown) {
+        this.pullDownBubbleY = Math.max(0, y - this.pullDownHeight)
+        this.pullDownStyle = `top: ${Math.min(y - this.pullDownHeight, 0)}px`
+        return
+      }
+
+      this.pullDownBubbleY = 0
+      this.pullDownStyle = `top: ${Math.min(y - this.pullDownStop, 0)}px`
+    },
+    resetPullDownVisual() {
+      this.pullDownStop = this.getPullDownStop()
+      this.pullDownHeight = 60
+      this.pullDownBubbleY = 0
+      this.pullDownStyle = `top: -${this.pullDownHeight}px`
+      this.isBeforePullDown = true
+    },
+    shouldDeferRefreshForPullDown() {
+      return hasEnabledConfig(this.resolvedOptions.pullDownRefresh) && this.pullState.pullDownStatus !== 'pulling'
+    },
+    getPullDownStop() {
+      return this.pullDownConfig && typeof this.pullDownConfig.stop === 'number' ? this.pullDownConfig.stop : 40
+    },
+    getPullDownStopTime() {
+      return this.pullDownConfig && typeof this.pullDownConfig.stopTime === 'number' ? this.pullDownConfig.stopTime : 600
+    },
+    getBounceTime() {
+      return this.scroll && this.scroll.options && typeof this.scroll.options.bounceTime === 'number'
+        ? this.scroll.options.bounceTime
+        : 800
+    },
+    clearPullDownTimer() {
+      if (this.resetPullDownTimer) {
+        window.clearTimeout(this.resetPullDownTimer)
+        this.resetPullDownTimer = null
+      }
     }
   }
 }
@@ -382,6 +645,8 @@ export default {
 }
 
 .compat-scroll-content {
+  position: relative;
+  z-index: 1;
   min-height: 100%;
 }
 
@@ -396,13 +661,145 @@ export default {
   min-width: 100%;
 }
 
-.compat-scroll-pullup,
-.compat-scroll-pulldown {
+.compat-scroll-pullup {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 40px;
   color: #667085;
   font-size: 13px;
+}
+
+.compat-scroll-pulldown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+}
+
+.compat-scroll-pulldown-wrapper {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #667085;
+  font-size: 13px;
+  transition-property: top;
+}
+
+.compat-scroll-pulldown-wrapper .before-trigger {
+  height: 54px;
+  padding-top: 6px;
+  line-height: 0;
+}
+
+.compat-scroll-pulldown-wrapper .after-trigger .compat-scroll-loading {
+  padding: 8px 0;
+}
+
+.compat-scroll-pulldown-wrapper .after-trigger .compat-scroll-pulldown-loaded {
+  padding: 12px 0;
+}
+
+.compat-scroll-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a96a3;
+  font-size: 24px;
+}
+
+.compat-scroll-loading-spinners {
+  position: relative;
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.compat-scroll-loading-spinner {
+  position: absolute;
+  top: 37%;
+  left: 44.5%;
+  width: 2px;
+  height: 25%;
+  border-radius: 50% / 20%;
+  background-color: currentColor;
+  opacity: 0.25;
+  animation: compat-spinner-fade 1s linear infinite;
+}
+
+.compat-scroll-loading-spinner:nth-child(1) {
+  animation-delay: 0s;
+  transform: rotate(-150deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(2) {
+  animation-delay: 0.083333333333333s;
+  transform: rotate(-120deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(3) {
+  animation-delay: 0.166666666666667s;
+  transform: rotate(-90deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(4) {
+  animation-delay: 0.25s;
+  transform: rotate(-60deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(5) {
+  animation-delay: 0.333333333333333s;
+  transform: rotate(-30deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(6) {
+  animation-delay: 0.416666666666667s;
+  transform: rotate(0deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(7) {
+  animation-delay: 0.5s;
+  transform: rotate(30deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(8) {
+  animation-delay: 0.583333333333333s;
+  transform: rotate(60deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(9) {
+  animation-delay: 0.666666666666667s;
+  transform: rotate(90deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(10) {
+  animation-delay: 0.75s;
+  transform: rotate(120deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(11) {
+  animation-delay: 0.833333333333333s;
+  transform: rotate(150deg) translateY(-150%);
+}
+
+.compat-scroll-loading-spinner:nth-child(12) {
+  animation-delay: 0.916666666666667s;
+  transform: rotate(180deg) translateY(-150%);
+}
+
+@keyframes compat-spinner-fade {
+  0% {
+    opacity: 0.85;
+  }
+
+  50%,
+  100% {
+    opacity: 0.25;
+  }
 }
 </style>

@@ -5,6 +5,7 @@ import {
   forceUpdateState,
   getPullStateSnapshot,
   openPullUpState,
+  resetPullDownState,
   resetPullUpState,
   startPullingDown,
   startPullingUp
@@ -78,6 +79,17 @@ describe('pull state', () => {
     finishPullDownState(state)
     expect(state.pullDownLoading).toBe(false)
     expect(state.pullDownStatus).toBe('success')
+  })
+
+  test('resetPullDownState returns pulldown to pulling state after bounce reset', () => {
+    const state = createPullState()
+    startPullingDown(state)
+    finishPullDownState(state)
+
+    resetPullDownState(state)
+
+    expect(state.pullDownLoading).toBe(false)
+    expect(state.pullDownStatus).toBe('pulling')
   })
 
   test('forceUpdate also ends pull down loading safely', () => {

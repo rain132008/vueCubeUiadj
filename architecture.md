@@ -5,7 +5,7 @@
 - `package.json`：项目依赖、启动脚本、测试脚本和构建脚本。
 - `webpack.config.js`：Webpack 入口、Vue 单文件组件处理、CSS 处理和开发服务器配置。
 - `babel.config.js`：Babel 浏览器目标配置。
-- `jest.config.js`：单元测试配置。
+- `jest.config.js`：单元测试配置，包含 `@` 到 `src` 的路径映射。
 - `index.html`：Webpack HTML 模板。
 - `README.md`：项目启动、构建、测试和当前范围说明。
 - `proj.md`：高阶项目方案和当前路线。
@@ -29,6 +29,7 @@
 - `tests/scrollOptions.spec.js`：滚动配置映射测试。
 - `tests/pullState.spec.js`：上拉/下拉状态测试。
 - `tests/scrollScenarios.spec.js`：场景入口清单测试，确保验收入口覆盖主要场景。
+- `tests/compatScrollPulldown.spec.js`：下拉层结构回归测试，确保下拉刷新提示不进入滚动内容流。
 
 ## 主流程和旧流程关系
 

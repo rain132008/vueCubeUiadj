@@ -156,7 +156,8 @@ export function buildBetterScrollOptions(props) {
   if (hasEnabledConfig(pullDownRefresh)) {
     betterOptions.pullDownRefresh = normalizeFeatureConfig(pullDownRefresh, {
       threshold: 90,
-      stop: 40
+      stop: 40,
+      stopTime: 600
     })
   } else {
     delete betterOptions.pullDownRefresh

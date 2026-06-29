@@ -44,6 +44,9 @@
 - 新增 `scrollScenarios.spec.js`，约束场景 id 顺序和入口文案完整性。
 - 浏览器验证：入口页显示 8 个场景卡片；点击横向滚动场景后进入测试页并滚动到 `scenario-horizontal`，返回按钮可回到入口页，控制台无 error。
 - 按移动端验收补齐响应式布局：入口页手机宽度下使用单列卡片，测试页手机宽度下使用单列对照面板、44px 触控按钮、稳定 scroll 容器高度，并避免横向/freeScroll 内部宽内容撑破整页。
+- 修复手写下拉刷新成功文案不回收的问题：下拉层从滚动内容流移到 wrapper 绝对定位层，回弹结束后隐藏到负高度，并新增 cube-ui 风格 bubble 拉伸、loading 和成功停留流程。
+- 新增 `compatScrollPulldown.spec.js` 结构回归测试，确保下拉提示层不再作为列表首项占位；新增 `resetPullDownState()` 状态测试。
+- 浏览器验证：手机视口下手写下拉层父节点为 `.compat-scroll-wrapper`，content 第一项为列表，回弹后下拉层 top 为 `-60px`，状态回到 `pulling`，控制台无 error。应用内浏览器不支持 CDP 触摸事件注入，真实手势仍需人工在页面里拖动确认手感。
 
 ### 遗留问题
 

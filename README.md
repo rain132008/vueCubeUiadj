@@ -58,6 +58,7 @@ npm run build
 - `refresh()`、`forceUpdate()`、`scrollTo()`、`scrollToElement()`、`getScroll()`、`enable()`、`disable()`。
 - `getPullStatus()` 用于 demo 和迁移验证读取内部上拉/下拉状态。
 - `pullUpLoad`、`pullDownRefresh` 状态骨架。
+- `pullDownRefresh` 已补齐 cube-ui 风格下拉层：下拉 bubble 拉伸、loading、成功文案停留和回弹后隐藏。
 - `direction="horizontal"` 与 `options.direction="horizontal"` 的配置映射。
 - 下拉刷新和横向滚动已经有基础对照面板。
 - `eventPassthrough` 会规避与当前滚动方向冲突的组合：横向滚动不会保留 `horizontal` 穿透，纵向滚动不会保留 `vertical` 穿透，`freeScroll` 不保留事件穿透。

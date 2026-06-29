@@ -14,6 +14,7 @@
 
 - [x] 补齐上拉加载 noMore 状态展示和手动验证入口。
 - [x] 补齐下拉刷新基础对照面板。
+- [x] 补齐下拉刷新回弹隐藏和 cube-ui 风格 bubble/loading/success 提示层。
 - [x] 补齐横向滚动基础对照面板。
 - [x] 补齐 freeScroll、scrollbar、mouseWheel 基础验证。
 - [x] 补齐 eventPassthrough 嵌套横向滚动基础验证。

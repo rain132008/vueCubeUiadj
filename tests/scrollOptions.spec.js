@@ -155,6 +155,27 @@ describe('scroll options', () => {
     })
   })
 
+  test('pullDownRefresh default keeps cube-ui stopTime behavior', () => {
+    const options = buildBetterScrollOptions({
+      options: {
+        pullDownRefresh: true
+      },
+      direction: 'vertical',
+      probeType: 1,
+      click: false,
+      bounce: true,
+      freeScroll: false,
+      pullUpLoad: false,
+      pullDownRefresh: false,
+      scrollbar: false,
+      mouseWheel: false,
+      eventPassthrough: ''
+    })
+
+    expect(options.pullDownRefresh.stop).toBe(40)
+    expect(options.pullDownRefresh.stopTime).toBe(600)
+  })
+
   test('pull text helpers provide stable defaults', () => {
     expect(getPullUpText(false)).toEqual({
       more: '加载更多',

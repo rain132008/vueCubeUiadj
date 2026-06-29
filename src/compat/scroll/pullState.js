@@ -35,6 +35,12 @@ export function finishPullDownState(state) {
   return state
 }
 
+export function resetPullDownState(state) {
+  state.pullDownLoading = false
+  state.pullDownStatus = 'pulling'
+  return state
+}
+
 export function forceUpdateState(state, dirty) {
   state.pullUpLoading = false
   state.pullDownLoading = false
