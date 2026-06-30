@@ -2,13 +2,13 @@
 
 ## 目的
 
-`CompatScroll` 是一个用于替代部分 `cube-ui` / `cube-scroll` 使用场景的兼容组件。当前仓库仍是 Vue2 + Webpack + cube-ui 的验证沙盒，真实 `cube-scroll` 只作为行为基准，手写 `CompatScroll` 是后续迁移到 Vue3 / AUI 时要继续演进的对象。
+`CompatScroll` 是一个用于替代部分 `cube-ui` / `cube-scroll` 使用场景的兼容组件。当前仓库仍是 Vue2 + Webpack + cube-ui 的验证沙盒，真实 `cube-scroll` 只作为行为基准，手写 `CubeCompatScroll` 是后续迁移到 Vue3 / AUI 时要继续演进的对象。
 
 这份文档面向后续接手的 AI 或开发者。接手时优先读本文件，再读：
 
-1. `src/components/CompatScroll.vue`
-2. `src/compat/scroll/options.js`
-3. `src/compat/scroll/pullState.js`
+1. `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`
+2. `src/app/compat/cube/utils/scrollOptions.js`
+3. `src/app/compat/cube/utils/pullState.js`
 4. `src/demos/CubeScrollCompareDemo.vue`
 5. `tests/scrollOptions.spec.js`
 6. `tests/pullState.spec.js`
@@ -39,7 +39,7 @@
 
 - 上拉触底、下拉阈值、横向滚动的自动化浏览器验证。
 - Vue3 外壳。
-- 目标迁移目录结构。
+- Vue3 版本接入目标业务项目。
 - 与真实 cube-ui 的全部边界行为逐项确认。
 
 ## 对外 API
@@ -97,7 +97,7 @@
 
 ## 配置映射规则
 
-配置入口在 `src/compat/scroll/options.js`。
+配置入口在 `src/app/compat/cube/utils/scrollOptions.js`。
 
 关键规则：
 
@@ -115,7 +115,7 @@
 
 ## 状态机
 
-状态入口在 `src/compat/scroll/pullState.js`。
+状态入口在 `src/app/compat/cube/utils/pullState.js`。
 
 ### 上拉加载
 
@@ -238,10 +238,10 @@ npm run build
 
 ## Vue3 迁移建议
 
-迁移时不要直接照搬整个 `CompatScroll.vue`。建议分层处理：
+迁移时不要直接照搬整个 `CubeCompatScroll.vue`。建议分层处理：
 
-1. 保留 `src/compat/scroll/options.js`，继续作为配置映射层。
-2. 保留 `src/compat/scroll/pullState.js`，继续作为状态机。
+1. 保留 `src/app/compat/cube/utils/scrollOptions.js`，继续作为配置映射层。
+2. 保留 `src/app/compat/cube/utils/pullState.js`，继续作为状态机。
 3. 新建 Vue3 外壳，负责：
    - `ref` 替代 Vue2 `$refs` 生命周期访问。
    - `onMounted` / `onActivated` / `onBeforeUnmount` 管理 BetterScroll。
@@ -255,7 +255,7 @@ npm run build
 后续让 AI 接手时，可以直接给下面这段上下文：
 
 ```text
-当前项目是 Vue2 + Webpack + cube-ui 的 cube-scroll 行为验证沙盒。真实 cube-scroll 只作为对照，手写组件是 src/components/CompatScroll.vue。普通 JS 逻辑在 src/compat/scroll/options.js 和 src/compat/scroll/pullState.js，后续 Vue3 迁移应优先复用这两个文件。请先阅读 docs/compat-scroll-ai-handoff.md、design.md、architecture.md、progress.md，再修改代码。所有改动需要同步文档，并至少运行 npm test、npm run build。移动端是主要验收场景，注意按钮触控尺寸和页面不能整体横向溢出。
+当前项目是 Vue2 + Webpack + cube-ui 的 cube-scroll 行为验证沙盒。真实 cube-scroll 只作为对照，手写组件是 src/app/compat/cube/components/scroll/CubeCompatScroll.vue。普通 JS 逻辑在 src/app/compat/cube/utils/scrollOptions.js 和 src/app/compat/cube/utils/pullState.js，后续 Vue3 迁移应优先复用这两个文件。请先阅读 docs/compat-scroll-ai-handoff.md、design.md、architecture.md、progress.md，再修改代码。所有改动需要同步文档，并至少运行 npm test、npm run build。移动端是主要验收场景，注意按钮触控尺寸和页面不能整体横向溢出。
 ```
 
 ## 接手时不要做的事

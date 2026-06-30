@@ -4,7 +4,7 @@ import {
   getPullDownText,
   getPullUpText,
   normalizeFeatureConfig
-} from '../src/compat/scroll/options'
+} from '../src/app/compat/cube/utils/scrollOptions'
 
 describe('scroll options', () => {
   test('direction horizontal maps to scrollX true and scrollY false', () => {

@@ -9,7 +9,7 @@ import {
   resetPullUpState,
   startPullingDown,
   startPullingUp
-} from '../src/compat/scroll/pullState'
+} from '../src/app/compat/cube/utils/pullState'
 
 describe('pull state', () => {
   test('startPullingUp enters loading once and blocks duplicate triggers', () => {

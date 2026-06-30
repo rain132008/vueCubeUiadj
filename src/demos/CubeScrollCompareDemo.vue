@@ -468,7 +468,7 @@
 </template>
 
 <script>
-import CompatScroll from '@/components/CompatScroll.vue'
+import CompatScroll from '@/app/compat/cube/components/scroll/CubeCompatScroll.vue'
 
 function createItems(count, offset = 0, prefix = '列表项') {
   return Array.from({ length: count }).map((_, index) => {

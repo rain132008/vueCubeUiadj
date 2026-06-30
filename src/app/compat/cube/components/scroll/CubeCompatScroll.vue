@@ -49,7 +49,7 @@ import ScrollBar from '@better-scroll/scroll-bar'
 import MouseWheel from '@better-scroll/mouse-wheel'
 import ObserveDOM from '@better-scroll/observe-dom'
 import ObserveImage from '@better-scroll/observe-image'
-import { buildBetterScrollOptions, getPullDownText, getPullUpText, hasEnabledConfig } from '@/compat/scroll/options'
+import { buildBetterScrollOptions, getPullDownText, getPullUpText, hasEnabledConfig } from '@/app/compat/cube/utils/scrollOptions'
 import {
   closePullUpState,
   createPullState,
@@ -61,7 +61,7 @@ import {
   resetPullUpState,
   startPullingDown,
   startPullingUp
-} from '@/compat/scroll/pullState'
+} from '@/app/compat/cube/utils/pullState'
 
 BScroll.use(PullUp)
 BScroll.use(PullDown)
@@ -234,7 +234,7 @@ const CompatPullDownBubble = {
 }
 
 export default {
-  name: 'CompatScroll',
+  name: 'CubeCompatScroll',
   components: {
     CompatPullDownBubble
   },

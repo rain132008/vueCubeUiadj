@@ -3,7 +3,10 @@ const path = require('path')
 
 describe('CompatScroll pulldown layout', () => {
   test('keeps pulldown indicator outside scroll content flow', () => {
-    const component = fs.readFileSync(path.resolve(__dirname, '../src/components/CompatScroll.vue'), 'utf8')
+    const component = fs.readFileSync(
+      path.resolve(__dirname, '../src/app/compat/cube/components/scroll/CubeCompatScroll.vue'),
+      'utf8'
+    )
     const template = component.slice(component.indexOf('<template>'), component.indexOf('</template>'))
     const wrapperStart = template.indexOf('ref="wrapper"')
     const contentStart = template.indexOf('ref="content"')

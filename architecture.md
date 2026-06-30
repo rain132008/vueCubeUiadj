@@ -21,12 +21,15 @@
 
 - `src/main.js`：Vue2 应用入口，只注册 `cube-ui/lib/scroll` 并挂载根组件。
 - `src/App.vue`：应用壳，负责场景入口页和测试页之间切换，并提供移动端触控按钮的全局基础样式。
+- `src/app/compat/cube/index.js`：cube 兼容组件统一出口，结构对齐公司项目 `app/compat/cube`。
+- `src/app/compat/cube/components/index.js`：cube 兼容组件集合出口。
+- `src/app/compat/cube/components/scroll/index.js`：scroll 兼容组件目录出口。
+- `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`：手写 cube-scroll 兼容组件，负责 Vue2 外壳、BetterScroll 生命周期和 ref 方法。
+- `src/app/compat/cube/utils/scrollOptions.js`：cube-scroll 风格配置到 BetterScroll 配置的映射逻辑，包括 `scroll-events` 到 `probeType` 的兼容处理和 `eventPassthrough` 冲突规避。
+- `src/app/compat/cube/utils/pullState.js`：上拉加载、下拉刷新状态管理逻辑，并提供 `getPullStateSnapshot()` 给 demo 和迁移验证读取状态。
 - `src/demos/ScenarioIndex.vue`：验收入口页，列出所有 cube-scroll 场景并进入对应测试区，包含移动端单列卡片布局。
 - `src/demos/scrollScenarios.js`：场景清单数据，供入口页和测试约束复用。
 - `src/demos/CubeScrollCompareDemo.vue`：真实 `cube-scroll` 与手写 `compat-scroll` 的对照验证页面，包含纵向、下拉、横向、历史实例、scrollbar、mouseWheel、eventPassthrough 嵌套、freeScroll、keep-alive、图片加载、空/短列表和卸载销毁场景，并适配手机宽度下的单列验收布局。
-- `src/components/CompatScroll.vue`：手写 cube-scroll 兼容组件，负责 Vue2 外壳、BetterScroll 生命周期和 ref 方法。
-- `src/compat/scroll/options.js`：cube-scroll 风格配置到 BetterScroll 配置的映射逻辑，包括 `scroll-events` 到 `probeType` 的兼容处理和 `eventPassthrough` 冲突规避。
-- `src/compat/scroll/pullState.js`：上拉加载、下拉刷新状态管理逻辑，并提供 `getPullStateSnapshot()` 给 demo 和迁移验证读取状态。
 
 ## tests
 
@@ -37,4 +40,4 @@
 
 ## 主流程和旧流程关系
 
-真实 `cube-ui` 的 `<cube-scroll>` 只作为行为基准，不做二次封装。手写 `CompatScroll.vue` 是当前主开发对象，后续迁移 Vue3 时优先复用 `src/compat/scroll` 下的普通 JavaScript 逻辑，再重写 Vue3 外壳。
+真实 `cube-ui` 的 `<cube-scroll>` 只作为行为基准，不做二次封装。手写 `CubeCompatScroll.vue` 是当前主开发对象，后续迁移 Vue3 时优先复用 `src/app/compat/cube/utils` 下的普通 JavaScript 逻辑，再重写 Vue3 外壳。

@@ -48,8 +48,9 @@
 - 新增 `compatScrollPulldown.spec.js` 结构回归测试，确保下拉提示层不再作为列表首项占位；新增 `resetPullDownState()` 状态测试。
 - 浏览器验证：手机视口下手写下拉层父节点为 `.compat-scroll-wrapper`，content 第一项为列表，回弹后下拉层 top 为 `-60px`，状态回到 `pulling`，控制台无 error。应用内浏览器不支持 CDP 触摸事件注入，真实手势仍需人工在页面里拖动确认手感。
 - 新增 `docs/compat-scroll-ai-handoff.md`，用于后续公司内部 AI 或开发者接手 `CompatScroll`，覆盖组件目的、API、配置映射、状态机、下拉 DOM 结构、验收入口、自动化验证、Vue3 迁移建议和禁止事项。
+- 按公司项目结构整理 compat 目录：`CubeCompatScroll.vue` 移到 `src/app/compat/cube/components/scroll/`，配置和状态 helper 移到 `src/app/compat/cube/utils/`，并新增 cube/components/scroll 的 index 导出。
 
 ### 遗留问题
 
 - 需要逐步确认 BetterScroll 2 插件方法和 cube-ui 旧行为之间的差异。
-- 需要继续补齐完整上拉触底自动化验证、下拉阈值细节、目标迁移目录结构和 Vue3 外壳迁移验证。
+- 需要继续补齐完整上拉触底自动化验证、下拉阈值细节和 Vue3 外壳迁移验证。

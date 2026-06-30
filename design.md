@@ -20,7 +20,7 @@
 
 ### 手写兼容组件
 
-`src/components/CompatScroll.vue` 对外模拟常见 `cube-scroll` 使用方式：
+`src/app/compat/cube/components/scroll/CubeCompatScroll.vue` 对外模拟常见 `cube-scroll` 使用方式：
 
 - props：`data`、`options`、`direction`、`probeType`、`pullUpLoad`、`pullDownRefresh`、`click`、`bounce`、`scrollbar`、`mouseWheel`、`eventPassthrough`、`freeScroll`、`scrollEvents`
 - events：`scroll`、`scroll-end`、`before-scroll-start`、`pulling-up`、`pulling-down`
@@ -31,7 +31,7 @@
 
 ### 框架无关逻辑
 
-`src/compat/scroll/options.js` 负责将 cube-scroll 风格配置映射为 BetterScroll 配置。传入 `scrollEvents` 且包含 `scroll` 时，自动将 `probeType` 提升到 3，保证实时滚动事件语义。
+`src/app/compat/cube/utils/scrollOptions.js` 负责将 cube-scroll 风格配置映射为 BetterScroll 配置。传入 `scrollEvents` 且包含 `scroll` 时，自动将 `probeType` 提升到 3，保证实时滚动事件语义。
 
 `eventPassthrough` 会做冲突规避：
 
@@ -39,7 +39,7 @@
 2. 纵向滚动删除 `eventPassthrough: 'vertical'`，避免把当前主滚动方向穿透掉。
 3. `freeScroll` 删除 `eventPassthrough`，避免双向自由滚动被事件穿透破坏。
 
-`src/compat/scroll/pullState.js` 负责维护上拉和下拉状态，避免这些规则散落在 Vue 生命周期中。`getPullStateSnapshot()` 返回可序列化状态，用于 demo 面板和后续迁移对照。
+`src/app/compat/cube/utils/pullState.js` 负责维护上拉和下拉状态，避免这些规则散落在 Vue 生命周期中。`getPullStateSnapshot()` 返回可序列化状态，用于 demo 面板和后续迁移对照。
 
 ## Demo 场景
 
