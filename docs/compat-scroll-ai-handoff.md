@@ -7,12 +7,14 @@
 这份文档面向后续接手的 AI 或开发者。接手时优先读本文件，再读：
 
 1. `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`
-2. `src/app/compat/cube/utils/scrollOptions.js`
-3. `src/app/compat/cube/utils/pullState.js`
-4. `src/demos/CubeScrollCompareDemo.vue`
-5. `tests/scrollOptions.spec.js`
-6. `tests/pullState.spec.js`
-7. `tests/compatScrollPulldown.spec.js`
+2. `src/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue`
+3. `src/app/compat/cube/utils/scrollOptions.js`
+4. `src/app/compat/cube/utils/pullState.js`
+5. `src/demos/CubeScrollCompareDemo.vue`
+6. `tests/scrollOptions.spec.js`
+7. `tests/pullState.spec.js`
+8. `tests/compatScrollPulldown.spec.js`
+9. `tests/vue3CompatScroll.spec.js`
 
 ## 当前完成度
 
@@ -34,11 +36,11 @@
 - 空列表、不足一屏、组件销毁重建。
 - 历史写法 `$refs.xxx.scroll` 直接访问。
 - 移动端验收布局。
+- Vue3 外壳文件 `CubeCompatScrollVue3.vue`，不替换原 Vue2 组件。
 
 仍未完成的能力：
 
 - 上拉触底、下拉阈值、横向滚动的自动化浏览器验证。
-- Vue3 外壳。
 - Vue3 版本接入目标业务项目。
 - 与真实 cube-ui 的全部边界行为逐项确认。
 
@@ -46,7 +48,9 @@
 
 ### Props
 
-组件对外模拟常见 `cube-scroll` 使用方式。
+Vue2 验证页使用 `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`。Vue3 业务项目接入使用 `src/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue` 或统一出口里的 `CubeCompatScrollVue3`。
+
+两个版本对外模拟常见 `cube-scroll` 使用方式。
 
 | 名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -93,7 +97,7 @@
 | `resetPullUpTxt()` | 重置上拉文案和 noMore 状态。 |
 | `destroy()` | 销毁内部 BetterScroll 实例。 |
 
-组件实例会暴露 `scroll`，用于兼容旧代码里的 `$refs.xxx.scroll.x`、`$refs.xxx.scroll.scrollTo()` 等写法。新代码优先使用封装方法。
+组件实例会暴露 `scroll`，用于兼容旧代码里的 `$refs.xxx.scroll.x`、`$refs.xxx.scroll.scrollTo()` 等写法。Vue3 版本通过 `defineExpose()` 暴露 `scroll` 和同名方法。新代码优先使用封装方法。
 
 ## 配置映射规则
 
@@ -226,6 +230,7 @@ npm run build
 - `tests/pullState.spec.js`：上拉/下拉状态机。
 - `tests/scrollScenarios.spec.js`：验收入口场景清单。
 - `tests/compatScrollPulldown.spec.js`：下拉层结构。
+- `tests/vue3CompatScroll.spec.js`：Vue3 外壳文件、共享 utils 和导出入口。
 
 接手后如果改组件行为，必须至少跑：
 
@@ -238,29 +243,49 @@ npm run build
 
 ## Vue3 迁移建议
 
+Vue3 外壳已经新增在：
+
+```text
+src/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue
+```
+
+Vue3 项目接入时优先使用：
+
+```js
+import { CubeCompatScrollVue3 } from '@/app/compat/cube'
+```
+
+或者使用深路径：
+
+```js
+import CubeCompatScrollVue3 from '@/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue'
+```
+
 迁移时不要直接照搬整个 `CubeCompatScroll.vue`。建议分层处理：
 
 1. 保留 `src/app/compat/cube/utils/scrollOptions.js`，继续作为配置映射层。
 2. 保留 `src/app/compat/cube/utils/pullState.js`，继续作为状态机。
-3. 新建 Vue3 外壳，负责：
+3. Vue3 外壳负责：
    - `ref` 替代 Vue2 `$refs` 生命周期访问。
    - `onMounted` / `onActivated` / `onBeforeUnmount` 管理 BetterScroll。
    - `defineExpose()` 暴露旧方法。
    - 事件用 `emit` 对齐现有名称。
 4. 下拉 bubble 可以继续作为独立内部组件迁移。
-5. 先让 Vue3 外壳跑同一套 demo 行为，再考虑进入业务项目替换。
+5. Vue2 验证页仍然使用 `CubeCompatScroll.vue`，不要为了 Vue3 接入改动这个基准验证组件。
+6. 先让 Vue3 外壳在真实 Vue3 项目跑同一套 demo 行为，再进入业务页面替换。
 
 ## AI 接手提示词建议
 
 后续让 AI 接手时，可以直接给下面这段上下文：
 
 ```text
-当前项目是 Vue2 + Webpack + cube-ui 的 cube-scroll 行为验证沙盒。真实 cube-scroll 只作为对照，手写组件是 src/app/compat/cube/components/scroll/CubeCompatScroll.vue。普通 JS 逻辑在 src/app/compat/cube/utils/scrollOptions.js 和 src/app/compat/cube/utils/pullState.js，后续 Vue3 迁移应优先复用这两个文件。请先阅读 docs/compat-scroll-ai-handoff.md、design.md、architecture.md、progress.md，再修改代码。所有改动需要同步文档，并至少运行 npm test、npm run build。移动端是主要验收场景，注意按钮触控尺寸和页面不能整体横向溢出。
+当前项目是 Vue2 + Webpack + cube-ui 的 cube-scroll 行为验证沙盒。真实 cube-scroll 只作为对照，Vue2 验证组件是 src/app/compat/cube/components/scroll/CubeCompatScroll.vue，Vue3 接入组件是 src/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue。普通 JS 逻辑在 src/app/compat/cube/utils/scrollOptions.js 和 src/app/compat/cube/utils/pullState.js，Vue2 和 Vue3 两个外壳都应复用这两个文件。请先阅读 docs/compat-scroll-ai-handoff.md、design.md、architecture.md、progress.md，再修改代码。所有改动需要同步文档，并至少运行 npm test、npm run build。移动端是主要验收场景，注意按钮触控尺寸和页面不能整体横向溢出。
 ```
 
 ## 接手时不要做的事
 
 - 不要把真实 `cube-scroll` 删除，它是当前行为基准。
+- 不要为了 Vue3 接入改动 `CubeCompatScroll.vue`，新增和修复 Vue3 行为优先改 `CubeCompatScrollVue3.vue`。
 - 不要把下拉刷新提示层放回 `.compat-scroll-content` 里。
 - 不要为了某个场景直接改 BetterScroll 内部源码。
 - 不要用字符串拼接粗暴处理配置，优先扩展 `options.js`。

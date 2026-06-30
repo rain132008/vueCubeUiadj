@@ -67,5 +67,6 @@ npm run build
 - 已增加场景入口页，点击场景后进入完整测试页并滚动到对应区域。
 - 已按移动端验收场景优化入口页和测试页：手机宽度下单列布局、按钮触控高度不低于 44px，横向滚动场景保留内部横向可滚动但不撑破整页。
 - 已新增 `docs/compat-scroll-ai-handoff.md`，用于后续公司内部 AI 或开发者接手 `CompatScroll`。
+- 已新增 `CubeCompatScrollVue3.vue`。当前 Vue2 验证页继续使用 `CubeCompatScroll.vue`，Vue3 项目接入使用 `CubeCompatScrollVue3`。
 
-后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节、目标目录结构整理和 Vue3 迁移外壳。
+后续会逐步补齐完整上拉触底自动化验证、下拉阈值细节和 Vue3 真实项目接入验证。

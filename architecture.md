@@ -21,10 +21,11 @@
 
 - `src/main.js`：Vue2 应用入口，只注册 `cube-ui/lib/scroll` 并挂载根组件。
 - `src/App.vue`：应用壳，负责场景入口页和测试页之间切换，并提供移动端触控按钮的全局基础样式。
-- `src/app/compat/cube/index.js`：cube 兼容组件统一出口，结构对齐公司项目 `app/compat/cube`。
+- `src/app/compat/cube/index.js`：cube 兼容组件统一出口，结构对齐公司项目 `app/compat/cube`，导出 Vue2 和 Vue3 scroll 版本。
 - `src/app/compat/cube/components/index.js`：cube 兼容组件集合出口。
-- `src/app/compat/cube/components/scroll/index.js`：scroll 兼容组件目录出口。
-- `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`：手写 cube-scroll 兼容组件，负责 Vue2 外壳、BetterScroll 生命周期和 ref 方法。
+- `src/app/compat/cube/components/scroll/index.js`：scroll 兼容组件目录出口，默认导出 Vue2 验证组件，并 named export Vue3 组件。
+- `src/app/compat/cube/components/scroll/CubeCompatScroll.vue`：手写 cube-scroll 兼容组件，负责 Vue2 外壳、BetterScroll 生命周期和 ref 方法，当前验证页继续使用它。
+- `src/app/compat/cube/components/scroll/CubeCompatScrollVue3.vue`：手写 cube-scroll Vue3 外壳，使用 Composition API 和 `defineExpose()` 暴露兼容方法，业务 Vue3 接入优先使用它。
 - `src/app/compat/cube/utils/scrollOptions.js`：cube-scroll 风格配置到 BetterScroll 配置的映射逻辑，包括 `scroll-events` 到 `probeType` 的兼容处理和 `eventPassthrough` 冲突规避。
 - `src/app/compat/cube/utils/pullState.js`：上拉加载、下拉刷新状态管理逻辑，并提供 `getPullStateSnapshot()` 给 demo 和迁移验证读取状态。
 - `src/demos/ScenarioIndex.vue`：验收入口页，列出所有 cube-scroll 场景并进入对应测试区，包含移动端单列卡片布局。
@@ -40,4 +41,4 @@
 
 ## 主流程和旧流程关系
 
-真实 `cube-ui` 的 `<cube-scroll>` 只作为行为基准，不做二次封装。手写 `CubeCompatScroll.vue` 是当前主开发对象，后续迁移 Vue3 时优先复用 `src/app/compat/cube/utils` 下的普通 JavaScript 逻辑，再重写 Vue3 外壳。
+真实 `cube-ui` 的 `<cube-scroll>` 只作为行为基准，不做二次封装。Vue2 验证页使用 `CubeCompatScroll.vue`，业务 Vue3 接入使用 `CubeCompatScrollVue3.vue`。两个外壳共享 `src/app/compat/cube/utils` 下的普通 JavaScript 逻辑。

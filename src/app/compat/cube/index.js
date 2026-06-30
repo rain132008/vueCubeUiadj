@@ -1,1 +1,1 @@
-export { CubeCompatScroll } from './components'
+export { CubeCompatScroll, CubeCompatScrollVue3 } from './components'
